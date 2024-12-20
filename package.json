@@ -1,0 +1,24 @@
+{
+  "name": "mern-starter-template",
+  "version": "1.0.0",
+  "description": "mern-starter-template",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "test": "npm run test"
+  },
+  "keywords": [
+    "starter-template",
+    "mern"
+  ],
+  "author": "Devansh Khetwani",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "dependencies": {
+    "@devanshdeveloper/is-this": "^1.1.7"
+  }
+}
