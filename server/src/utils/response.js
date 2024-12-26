@@ -102,13 +102,12 @@ export default class ResponseHandler {
       this.response[0].message = message;
     }
 
-    // Default to Internal Server Error
     if (!this.response[0].message) {
       this.response[0].message = errorObj.message || "Something went wrong!";
     }
 
     if (this.response[1].status === 200) {
-      this.status(500); // Default to Internal Server Error
+      this.status(500); 
     }
 
     this.response[0].error = this.response[0].error || errorObj;

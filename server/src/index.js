@@ -1,9 +1,10 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { logger } from "hono/logger";
+import { logger as loggerMiddleware } from "hono/logger";
 import api from "./api";
 import { connectDatabase } from "./lib/mongoose";
+import logger from "./utils/logger";
 
 const app = new Hono();
 
@@ -11,7 +12,7 @@ const app = new Hono();
 connectDatabase()
 
 // Start Middlewares
-app.use("*", logger());
+app.use("*", loggerMiddleware());
 app.use("*", cors());
 
 app.route("/", api);
@@ -22,13 +23,13 @@ app.notFound((c) => {
 });
 
 app.onError((err, c) => {
-  console.error(err);
+  logger.error(err);
   return c.text("Custom Error Message", 500);
 });
 
 const port = 3000;
 
-console.log(`Server is running on http://localhost:${port}`);
+logger.info(`Server is running on http://localhost:${port}`);
 
 serve({
   fetch: app.fetch,

@@ -1,5 +1,8 @@
 import { model, Schema } from "mongoose";
 import Roles from "../../../constansts/roles";
+import bcrypt from "bcrypt";
+import { SALT_ROUNDS } from "../../../constansts/env";
+
 const userSchema = new Schema(
   {
     name: {
@@ -14,6 +17,10 @@ const userSchema = new Schema(
       trim: true,
       lowercase: true,
     },
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
     password: {
       type: String,
       required: true,
@@ -25,9 +32,14 @@ const userSchema = new Schema(
       required: true,
       default: "user",
     },
-    isActive: {
-      type: Boolean,
-      default: true,
+    storefront: {
+      type: Schema.Types.ObjectId,
+      ref: "Storefront",
+      required: true,
+    },
+    loggedInAt: {
+      type: Date,
+      default: null,
     },
     deletedAt: {
       type: Date,
@@ -38,6 +50,24 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
+
+userSchema.pre("save", async function (next) {
+  const user = this;
+  if (!user.isModified("password")) {
+    return next();
+  }
+  try {
+    const salt = await bcrypt.genSalt(SALT_ROUNDS);
+    user.password = await bcrypt.hash(user.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
 const User = model("User", userSchema);
 
